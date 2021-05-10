@@ -1,0 +1,9 @@
+[package]
+name = "rustyriscy"
+version = "0.1.0"
+authors = ["Nashe Mncube <mncubenashe@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+# riscv = "0.6.0"
+
