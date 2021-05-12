@@ -8,8 +8,3 @@ The following sets up the correct toolchain and target for builds, this assumes 
     rustup default nightly
     rustup target add riscv64gc-unknown-none-elf
     cargo install cargo-binutils
-
-You'll need to specify a drive. I used mkfile on Mac:
-
-    mkfile -n 32M hdd.dsk
- 

@@ -5,5 +5,7 @@ authors = ["Nashe Mncube <mncubenashe@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-# riscv = "0.6.0"
+riscv = "0.6"
+rustsbi = "0.1"
+
 
