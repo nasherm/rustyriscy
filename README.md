@@ -1,4 +1,4 @@
-# RustyRiscy
+# rustyriscy
 A Rust OS targeting Risc-V
 
 # Dependencies
