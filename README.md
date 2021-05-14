@@ -1,5 +1,5 @@
 # rustyriscy
-A Rust OS targeting Risc-V
+A Rust OS targeting RISC-V.
 
 # Dependencies
 ## Toolchain

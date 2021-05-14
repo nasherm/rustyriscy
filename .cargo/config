@@ -18,5 +18,3 @@ runner = '''qemu-system-riscv64
 -device virtio-tablet-device
 -device virtio-keyboard-device
 -kernel '''
-
-# TODO: test build options

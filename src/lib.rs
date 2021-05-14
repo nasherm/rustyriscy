@@ -42,6 +42,7 @@ pub fn test_runner(tests: &[&dyn Testable]) {
     for test in tests {
         test.run();
     }
+    uart_println!();
     qemu_exit_success();
 }
 

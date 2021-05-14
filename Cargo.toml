@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["Nashe Mncube <mncubenashe@gmail.com>"]
 edition = "2018"
 
+[[bin]]
+name = "rustyriscy"
+test=false
+
 [dependencies]
 spin = "0.5.2"
 volatile = "0.2.6"
