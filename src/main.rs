@@ -1,9 +1,10 @@
-#![no_main]
 #![no_std]
+#![no_main]
 #![feature(naked_functions)]
 #![feature(asm)]
 
 use core::panic::PanicInfo;
+mod uart;
 
 // As we aren't linking the standard
 // library we must define a panic
@@ -22,7 +23,8 @@ fn panic(_info: &PanicInfo) -> !{
 // We first read the hart-id (hardware thread id)
 // using a control register command. If this isn't
 // equal to zero, we jump into a loop that can
-// only be interrupted by a hardware interrupt.
+// only be interrupted by a hardware interrupt
+// i.e. all non-bootstrapping cores are idle.
 // Otherwise, we write zero to the supervisor
 // address and translation register. This register
 // holds the physical page number of the root
@@ -59,21 +61,30 @@ fn panic(_info: &PanicInfo) -> !{
 // our machine interrupt-enable register. We
 // then set our return address to infinite loop
 // at asm_trap_vector.
+#[link_section = ".startup"]
 #[naked]
 #[no_mangle]
 pub unsafe extern "C" fn _start() -> !{
     asm!(
         "   csrr	t0, mhartid
-            bnez	t0, 4f
+            bnez	t0, 3f
             csrw	satp, zero
         .option push
         .option norelax
             la		gp, _global_pointer
         .option pop
-            li		sp, 0x90000000
+            la    a0, _bss_start
+            la    a1, _bss_end
+            bgeu  a0, a1, 2f
+        1:
+            sd        zero, (a0)
+            addi     a0, a0, 8
+            bltu     a0, a1, 1b
+        2:
+            la		sp, _stack
             li		t0, (0b11 << 11) | (1 << 7) | (1 << 3)
             csrw	mstatus, t0
-            la		t1, kernel_init
+            la		t1, kernel_main
             csrw	mepc, t1
             la		t2, asm_trap_vector
             csrw	mtvec, t2
@@ -81,6 +92,7 @@ pub unsafe extern "C" fn _start() -> !{
             csrw	mie, t3
             la		ra, 4f
             mret
+        3:
         4:
         asm_trap_vector:
             wfi
@@ -90,6 +102,10 @@ pub unsafe extern "C" fn _start() -> !{
 }
 
 #[no_mangle]
-unsafe fn kernel_init() -> ! {
+unsafe fn kernel_main() -> ! {
+    uart_println!("Hello, world!");
     loop {}
 }
+
+#[no_mangle]
+extern "C" fn eh_personality() {}

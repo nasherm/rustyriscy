@@ -36,7 +36,7 @@ SECTIONS
     .text :
     {
         PROVIDE(_text_start = .);
-        *(.text_init) *(.text, *.text.*)
+        *(.startup) *(.text_init) *(.text *.text.*)
         PROVIDE(_text_end = .);
     /*
       Stephen Marz
