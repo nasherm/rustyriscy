@@ -2,6 +2,9 @@
 #![no_main]
 #![feature(naked_functions)]
 #![feature(asm)]
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+#![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
 mod uart;
@@ -11,8 +14,11 @@ mod uart;
 // handler. This is the function
 // which is called when a  panic occurs
 // i.e. a serious bug in our code.
+#[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> !{
+    uart_println!("Kernel panic!");
+    uart_println!("Panic info: {}", _info);
     loop {}
 }
 
@@ -104,8 +110,57 @@ pub unsafe extern "C" fn _start() -> !{
 #[no_mangle]
 unsafe fn kernel_main() -> ! {
     uart_println!("Hello, world!");
+
     loop {}
 }
 
-#[no_mangle]
-extern "C" fn eh_personality() {}
+/// TESTING ///
+use qemu_exit::QEMUExit;
+const QEMU_EXIT_HANDLE: qemu_exit::RISCV64 = qemu_exit::RISCV64::new(0x10_0000);
+
+pub fn qemu_exit_fail() -> ! {
+    QEMU_EXIT_HANDLE.exit_failure()
+}
+
+pub fn qemu_exit_success() -> ! {
+    QEMU_EXIT_HANDLE.exit_success()
+}
+
+pub trait Testable {
+    fn run(&self) -> ();
+}
+
+impl <T> Testable for T
+where
+    T : Fn()
+{
+    fn run(&self) {
+        uart_print!("{} ...\t", core::any::type_name::<T>());
+        self();
+        uart_println!("[ok]")
+    }
+}
+
+// Our panic handler called
+// on failed tests.
+#[cfg(test)]
+#[panic_handler]
+fn panic(_info: &PanicInfo) -> ! {
+    uart_println!("[failed]");
+    uart_println!("Error: {}", _info);
+    qemu_exit_fail();
+}
+
+#[cfg(test)]
+fn test_runner(tests: &[&dyn Testable]) {
+    uart_println!("Running {} tests", tests.len());
+    for test in tests {
+        test.run();
+    }
+    qemu_exit_success();
+}
+
+#[test_case]
+fn trivial() {
+    assert_eq!(1, 1);
+}
