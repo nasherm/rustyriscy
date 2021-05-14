@@ -37,7 +37,7 @@ impl Uart {
     }
 
     fn write_at_offset(&mut self, offset:usize, value:u8) {
-        let mut ptr = self.buffer_address as *mut u8;
+        let ptr = self.buffer_address as *mut u8;
         unsafe {
             ptr.add(offset).write_volatile(value);
         }
@@ -103,6 +103,7 @@ lazy_static! {
     });
 }
 
+#[doc(hidden)]
 pub fn _print(args: ::core::fmt::Arguments) {
     use core::fmt::Write;
     UART.lock().write_fmt(args).expect("Printing failed");
@@ -116,6 +117,7 @@ macro_rules! uart_print
         $crate::uart::_print(format_args!($($arg)*));
 	  });
 }
+
 #[macro_export]
 macro_rules! uart_println
 {
@@ -129,4 +131,3 @@ macro_rules! uart_println
 		    $crate::uart_print!(concat!($fmt, "\n"), $($args)*)
 	  });
 }
-
