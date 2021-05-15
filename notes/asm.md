@@ -1,3 +1,4 @@
+*** Credit to the [riscv-asm-manual](https://github.com/riscv/riscv-asm-manual/blob/master/riscv-asm.md)***
 # RISC-V assembly
 The ISA can be obtained at this link [RISC-V spec](https://riscv.org/technical/specifications/)
 

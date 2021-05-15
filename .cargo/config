@@ -10,7 +10,6 @@ rustflags = ['-Cpanic=abort', '-Clink-arg=-Tsrc/lds/linker.ld']
  -m 128M
  -serial mon:stdio
  -d guest_errors,unimp
- -drive if=none,format=raw,file=hdd.dsk,id=foo
  -bios none
  -device virtio-rng-device
  -device virtio-gpu-device

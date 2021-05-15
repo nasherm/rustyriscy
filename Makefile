@@ -7,7 +7,6 @@ QEMU_FLAGS+=  -smp 4
 QEMU_FLAGS+=  -m 128M
 QEMU_FLAGS+=  -serial mon:stdio
 QEMU_FLAGS+=  -d guest_errors,unimp
-QEMU_FLAGS+=  -drive if=none,format=raw,file=hdd.dsk,id=foo
 QEMU_FLAGS+=  -bios none
 QEMU_FLAGS+=  -device virtio-rng-device
 QEMU_FLAGS+=  -device virtio-gpu-device
