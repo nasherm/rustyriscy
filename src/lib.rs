@@ -7,6 +7,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 pub mod uart;
+pub mod page;
 
 use core::panic::PanicInfo;
 
@@ -58,6 +59,24 @@ fn panic(_info: &PanicInfo) -> ! {
     test_panic_handler(_info);
 }
 
+// This function is never called
+// in reality, but acts as a hack
+// for us to initialise read only
+// global data.
+#[link_section = ".rodata"]
+#[naked]
+#[no_mangle]
+pub unsafe extern "C" fn init_globals() -> ! {
+    asm!(
+        ".global HEAP_START
+         HEAP_START: .dword _heap_start
+         .global HEAP_SIZE
+         HEAP_SIZE: .dword _heap_size",
+        options(noreturn)
+    );
+}
+
+
 #[cfg(test)]
 #[link_section = ".startup"]
 #[naked]
@@ -79,7 +98,7 @@ pub unsafe extern "C" fn _start() -> !{
             addi     a0, a0, 8
             bltu     a0, a1, 1b
         2:
-            la		sp, _stack
+            la		sp, _stack_end
             li		t0, (0b11 << 11) | (1 << 7) | (1 << 3)
             csrw	mstatus, t0
             la		t1, kernel_main

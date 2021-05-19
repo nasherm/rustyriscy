@@ -131,3 +131,4 @@ macro_rules! uart_println
 		    $crate::uart_print!(concat!($fmt, "\n"), $($args)*)
 	  });
 }
+

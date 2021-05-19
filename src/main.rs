@@ -7,7 +7,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use rustyriscy::uart_println;
+use rustyriscy::{uart_println, page};
 
 // As we aren't linking the standard
 // library we must define a panic
@@ -93,7 +93,7 @@ pub unsafe extern "C" fn _start() -> !{
             addi     a0, a0, 8
             bltu     a0, a1, 1b
         2:
-            la		sp, _stack
+            la		sp, _stack_end
             li		t0, (0b11 << 11) | (1 << 7) | (1 << 3)
             csrw	mstatus, t0
             la		t1, kernel_main
@@ -113,10 +113,14 @@ pub unsafe extern "C" fn _start() -> !{
     );
 }
 
+
 #[no_mangle]
 unsafe fn kernel_main() -> ! {
     uart_println!("Hello, world!");
     #[cfg(test)]
     test_main();
+
+    // Init paging
+    page::init_paging();
     loop {}
 }
