@@ -27,6 +27,7 @@ pub struct Page {
     flags: u8,
 }
 
+<<<<<<< HEAD
 // --- A brief introduction to paging ---
 // Paging allows for the OS to manage
 // memory that is used by processes.
@@ -45,6 +46,8 @@ pub struct Page {
 // our physical address space. When we initialise
 // paging, we read the size of our heap, and calculate
 // the number of pages based on our page size (4096).
+=======
+>>>>>>> 1e6dddba112d884a8132adc08dc13fb100535d12
 impl Page {
     pub fn clear(&mut self) {
         self.flags = Flags::Empty.val();
@@ -64,7 +67,7 @@ pub fn init_paging() {
     }
 }
 
-// We attempt to allocate 
+// We attempt to allocate
 pub fn alloc(page: usize) -> *mut u8 {
     assert!(pages > 0);
     unsafe {
